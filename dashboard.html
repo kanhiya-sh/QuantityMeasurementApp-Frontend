@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuantityMeasurement | Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="floating-bg dashboard-bg">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <main class="dashboard-shell">
+      <header class="dashboard-header glass-card">
+        <div>
+          <h1>Measurement Dashboard</h1>
+          <p id="welcomeText">Welcome back</p>
+        </div>
+        <div class="header-actions">
+          <button
+            id="themeToggle"
+            class="icon-btn chip-btn"
+            type="button"
+            aria-label="Toggle dark/light mode"
+            title="Toggle theme"
+          >
+            <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M21 13.2A8.2 8.2 0 0 1 10.8 3 7.1 7.1 0 1 0 21 13.2Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button id="logoutBtn" class="chip-btn danger" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="grid-layout">
+        <article class="panel glass-card selection-panel">
+          <h2>Selection Panel</h2>
+
+          <div class="group">
+            <h3>Choose Type</h3>
+            <div class="choice-row" id="typeChoices"></div>
+          </div>
+
+          <div class="group">
+            <h3>Choose Action</h3>
+            <div class="choice-row" id="actionChoices"></div>
+          </div>
+        </article>
+
+        <article class="panel glass-card calculator-panel">
+          <h2>Calculator Panel</h2>
+          <div class="calculator-grid">
+            <div class="calc-field">
+              <label for="value1">Value 1</label>
+              <input id="value1" type="number" step="any" placeholder="Enter first value" />
+            </div>
+            <div class="calc-field">
+              <label for="unit1">Unit 1</label>
+              <select id="unit1"></select>
+            </div>
+
+            <div class="calc-field">
+              <label for="value2">Value 2</label>
+              <input id="value2" type="number" step="any" placeholder="Enter second value" />
+            </div>
+            <div class="calc-field">
+              <label for="unit2">Unit 2</label>
+              <select id="unit2"></select>
+            </div>
+          </div>
+
+          <div class="op-group" id="operationGroup"></div>
+          <button id="calcBtn" class="btn-primary wide" type="button">= Calculate</button>
+        </article>
+
+        <article class="panel glass-card result-panel">
+          <h2>Result</h2>
+          <p id="resultText">Select options and calculate to see result.</p>
+        </article>
+      </section>
+    </main>
+
+    <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

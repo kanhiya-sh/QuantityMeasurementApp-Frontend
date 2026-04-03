@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuantityMeasurement | Auth</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="auth">
+    <div class="floating-bg">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <main class="auth-shell">
+      <section class="brand-pane glass-card">
+        <h1>QuantityMeasurement</h1>
+        <p>
+          Smart quantity comparisons and conversions in one clean interactive
+          dashboard.
+        </p>
+
+        <div class="illustration" aria-hidden="true">
+          <div class="cart"></div>
+          <div class="wheel wheel-left"></div>
+          <div class="wheel wheel-right"></div>
+          <div class="box box-a"></div>
+          <div class="box box-b"></div>
+        </div>
+      </section>
+
+      <section class="auth-pane">
+        <div class="auth-card glass-card">
+          <nav class="auth-tabs" aria-label="Authentication tabs">
+            <button class="tab-btn active" data-tab="login" type="button">Login</button>
+            <button class="tab-btn" data-tab="signup" type="button">Signup</button>
+            <span class="tab-indicator"></span>
+          </nav>
+
+          <form id="loginForm" class="auth-form active" novalidate>
+            <label>
+              <span>Email</span>
+              <input type="email" id="loginEmail" placeholder="you@example.com" required />
+            </label>
+            <label class="password-field">
+              <span>Password</span>
+              <input type="password" id="loginPassword" placeholder="Enter your password" required />
+              <button class="toggle-pass" type="button" data-target="loginPassword">Show</button>
+            </label>
+            <button class="btn-primary" type="submit">Login</button>
+          </form>
+
+          <form id="signupForm" class="auth-form" novalidate>
+            <label>
+              <span>Full Name</span>
+              <input type="text" id="signupName" placeholder="John Doe" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" id="signupEmail" placeholder="you@example.com" required />
+            </label>
+            <label class="password-field">
+              <span>Password</span>
+              <input type="password" id="signupPassword" placeholder="Create a password" required />
+              <button class="toggle-pass" type="button" data-target="signupPassword">Show</button>
+            </label>
+            <label>
+              <span>Mobile Number</span>
+              <input type="tel" id="signupMobile" placeholder="10-digit mobile number" required />
+            </label>
+            <button class="btn-primary" type="submit">Create Account</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

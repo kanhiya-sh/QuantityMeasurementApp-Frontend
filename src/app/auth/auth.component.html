@@ -1,0 +1,193 @@
+<div class="login-page">
+  <div class="login-page__ambient" aria-hidden="true">
+    <span class="login-page__blob login-page__blob--1"></span>
+    <span class="login-page__blob login-page__blob--2"></span>
+    <span class="login-page__blob login-page__blob--3"></span>
+  </div>
+
+  <div class="login-shell">
+    <!-- LEFT SIDE -->
+    <aside class="login-brand">
+      <div class="login-brand__inner">
+        <h1 class="login-brand__title">QuantifyX</h1>
+        <p class="login-brand__subtitle">
+          Smart quantity comparisons and conversions in one clean interactive dashboard.
+        </p>
+
+        <div class="login-brand__art" aria-hidden="true">
+          <div class="cart">
+            <div class="cart__body"></div>
+            <div class="cart__handle"></div>
+            <div class="cart__wheel cart__wheel--l"></div>
+            <div class="cart__wheel cart__wheel--r"></div>
+            <div class="cart__pkg cart__pkg--a"></div>
+            <div class="cart__pkg cart__pkg--b"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT SIDE -->
+    <main class="login-auth">
+      <div class="auth-card">
+
+        <!-- TABS -->
+        <nav class="auth-tabs">
+          <div
+            class="auth-tabs__track"
+            [class.auth-tabs__track--signup]="activeTab() === 'signup'"
+          >
+            <span class="auth-tabs__indicator"></span>
+
+            <button
+              type="button"
+              class="auth-tabs__btn"
+              [class.auth-tabs__btn--active]="activeTab() === 'login'"
+              (click)="setTab('login')"
+            >
+              Login
+            </button>
+
+            <button
+              type="button"
+              class="auth-tabs__btn"
+              [class.auth-tabs__btn--active]="activeTab() === 'signup'"
+              (click)="setTab('signup')"
+            >
+              Signup
+            </button>
+          </div>
+        </nav>
+
+        <!-- ================= LOGIN ================= -->
+        @if (activeTab() === 'login') {
+          <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+
+            <!-- USERNAME -->
+            <label class="field">
+              <span class="field__label">Username</span>
+              <input
+                class="field__input"
+                type="text"
+                formControlName="username"
+                placeholder="Enter username"
+              />
+              @if (loginForm.controls.username.touched && loginForm.controls.username.invalid) {
+                <small class="field__err">Username is required.</small>
+              }
+            </label>
+
+            <!-- PASSWORD -->
+            <label class="field field--password">
+              <span class="field__label">Password</span>
+              <div class="field__control">
+                <input
+                  class="field__input field__input--with-toggle"
+                  [type]="showPasswordLogin() ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  class="field__toggle"
+                  (click)="showPasswordLogin.update(v => !v)"
+                >
+                  {{ showPasswordLogin() ? 'Hide' : 'Show' }}
+                </button>
+              </div>
+
+              @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+                <small class="field__err">Minimum 6 characters.</small>
+              }
+            </label>
+
+            <!-- BUTTON -->
+            <button class="auth-submit" type="submit" [disabled]="loading()">
+              {{ loading() ? 'Signing in…' : 'Login' }}
+            </button>
+
+          </form>
+        }
+
+        <!-- ================= SIGNUP ================= -->
+        @if (activeTab() === 'signup') {
+          <form class="auth-form" [formGroup]="signupForm" (ngSubmit)="submitSignup()">
+
+            <!-- FULL NAME -->
+            <label class="field">
+              <span class="field__label">Full Name</span>
+              <input
+                class="field__input"
+                type="text"
+                formControlName="fullName"
+                placeholder="John Doe"
+              />
+              @if (signupForm.controls.fullName.touched && signupForm.controls.fullName.invalid) {
+                <small class="field__err">Enter your full name.</small>
+              }
+            </label>
+
+            <!-- EMAIL -->
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input
+                class="field__input"
+                type="email"
+                formControlName="email"
+                placeholder="you@example.com"
+              />
+              @if (signupForm.controls.email.touched && signupForm.controls.email.invalid) {
+                <small class="field__err">Enter a valid email.</small>
+              }
+            </label>
+
+            <!-- PASSWORD -->
+            <label class="field field--password">
+              <span class="field__label">Password</span>
+              <div class="field__control">
+                <input
+                  class="field__input field__input--with-toggle"
+                  [type]="showPasswordSignup() ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Create password"
+                />
+                <button
+                  type="button"
+                  class="field__toggle"
+                  (click)="showPasswordSignup.update(v => !v)"
+                >
+                  {{ showPasswordSignup() ? 'Hide' : 'Show' }}
+                </button>
+              </div>
+
+              @if (signupForm.controls.password.touched && signupForm.controls.password.invalid) {
+                <small class="field__err">Minimum 6 characters.</small>
+              }
+            </label>
+
+            <!-- MOBILE -->
+            <label class="field">
+              <span class="field__label">Mobile</span>
+              <input
+                class="field__input"
+                type="tel"
+                formControlName="mobile"
+                placeholder="10-digit mobile number"
+              />
+              @if (signupForm.controls.mobile.touched && signupForm.controls.mobile.invalid) {
+                <small class="field__err">Mobile must be 10 digits.</small>
+              }
+            </label>
+
+            <!-- BUTTON -->
+            <button class="auth-submit" type="submit" [disabled]="loading()">
+              {{ loading() ? 'Creating…' : 'Create account' }}
+            </button>
+
+          </form>
+        }
+
+      </div>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="history-page">
+  <div class="floating-bg" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <main class="history-shell">
+    <header class="history-header glass">
+      <div>
+        <h1>Your Activity History</h1>
+        <p>Track all your past operations</p>
+      </div>
+
+      <div class="history-actions">
+        <button class="btn ghost" type="button" (click)="goBack()">Back</button>
+        <button class="btn primary" type="button" (click)="refresh()" [disabled]="loading()">
+          @if (loading()) { Refreshing... } @else { Refresh }
+        </button>
+      </div>
+    </header>
+
+    <section class="history-content glass">
+      @if (loading()) {
+        <div class="skeleton-grid">
+          @for (_ of [1,2,3,4,5,6]; track $index) {
+            <article class="skeleton-card">
+              <div class="sk-line sk-sm"></div>
+              <div class="sk-line"></div>
+              <div class="sk-line sk-md"></div>
+            </article>
+          }
+        </div>
+      } @else if (items().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">⏳</div>
+          <h2>No history found</h2>
+          <p>Try performing Compare, Convert, or Add operations first.</p>
+        </div>
+      } @else {
+        <div class="cards">
+          @for (item of items(); track $index) {
+            <article class="history-card">
+              <div class="card-top">
+                <span class="op-badge" [class]="badgeClass(item.operation)">
+                  {{ item.operation || 'UNKNOWN' }}
+                </span>
+                <span class="time">{{ formattedTimestamp(item.timestamp) }}</span>
+              </div>
+              <p class="result">{{ item.result }}</p>
+              <p class="meta">@{{ item.username || 'unknown' }}</p>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</div>
+

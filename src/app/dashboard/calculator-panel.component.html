@@ -1,0 +1,82 @@
+<section class="panel glass">
+  <header>
+    <h2>Calculator</h2>
+    <p>Enter values, pick units, then calculate.</p>
+  </header>
+
+  <div class="grid2" [class.grid2-convert]="action() === 'Conversion'">
+    <label class="field">
+      <span>Value 1</span>
+      <input
+        type="number"
+        step="any"
+        [ngModel]="value1()"
+        (ngModelChange)="value1Change.emit($event)"
+        placeholder="First value"
+      />
+    </label>
+
+    <label class="field">
+      <span>Unit 1</span>
+      <select [ngModel]="unit1()" (ngModelChange)="unit1Change.emit($event)">
+        @for (u of units(); track u) {
+          <option [value]="u">{{ u }}</option>
+        }
+      </select>
+    </label>
+
+    @if (action() !== 'Conversion') {
+      <label class="field fade-in">
+        <span>Value 2</span>
+        <input
+          type="number"
+          step="any"
+          [ngModel]="value2()"
+          (ngModelChange)="value2Change.emit($event)"
+          placeholder="Second value"
+        />
+      </label>
+    }
+
+    <label class="field fade-in">
+      <span>Unit 2</span>
+      <select [ngModel]="unit2()" (ngModelChange)="unit2Change.emit($event)">
+        @for (u of units(); track u) {
+          <option [value]="u">{{ u }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (action() === 'Arithmetic') {
+    <div class="ops">
+      @for (op of ops; track op) {
+        <button
+          type="button"
+          class="op"
+          [class.active]="operation() === op"
+          (click)="operationChange.emit(op)"
+        >
+          {{ op }}
+        </button>
+      }
+    </div>
+  }
+
+  <button
+    class="btn primary"
+    type="button"
+    (click)="calculate.emit()"
+    [disabled]="loading()"
+  >
+    @if (loading()) {
+      Working…
+    } @else if (action() === 'Comparison') {
+      Compare
+    } @else if (action() === 'Conversion') {
+      Convert
+    } @else {
+      {{ operation() }}
+    }
+  </button>
+</section>

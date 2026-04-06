@@ -1,0 +1,6 @@
+<router-outlet />
+<div class="toast-host" aria-live="polite">
+  @for (t of toast.items(); track t.id) {
+    <div class="toast" [class.error]="t.kind === 'error'">{{ t.message }}</div>
+  }
+</div>

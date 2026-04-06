@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
 import { quantityExtractMessage } from './quantity.service';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 type JwtPayload = Record<string, unknown> & {
-  exp?: number; // seconds since epoch
+  exp?: number;
   username?: string;
   sub?: string;
   email?: string;
@@ -33,63 +34,66 @@ function decodeJwtPayload(token: string): JwtPayload | null {
 function tokenExpired(token: string): boolean {
   const payload = decodeJwtPayload(token);
   if (!payload?.exp) return false;
-  const nowSeconds = Math.floor(Date.now() / 1000);
-  return payload.exp < nowSeconds;
+  return payload.exp < Math.floor(Date.now() / 1000);
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
+  private readonly http   = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
+  private readonly toast  = inject(ToastService);
 
-  private readonly baseUrl = 'http://localhost:8080';
+  // Reads from environment.ts (local) or environment.prod.ts (production)
+  private readonly baseUrl = environment.apiUrl;
 
   readonly loading = signal(false);
 
-  readonly token = signal<string | null>(localStorage.getItem('token'));
+  // Single source of truth — initialized once from localStorage
+  readonly token = signal<string | null>(AuthService.loadValidToken());
 
   readonly username = computed(() => {
     const t = this.token();
     if (!t) return '';
     const payload = decodeJwtPayload(t);
-    return (
-      (payload?.username as string | undefined) ||
-      (payload?.sub as string | undefined) ||
-      (payload?.email as string | undefined) ||
-      ''
-    );
+    return (payload?.username as string | undefined)
+        || (payload?.sub      as string | undefined)
+        || (payload?.email    as string | undefined)
+        || '';
   });
 
-  readonly isAuthenticated = computed(() => !!this.token() && !tokenExpired(this.token()!));
+  readonly isAuthenticated = computed(
+    () => !!this.token() && !tokenExpired(this.token()!),
+  );
 
   isLoggedIn(): boolean {
     return this.isAuthenticated();
   }
 
-  constructor() {
-    const t = localStorage.getItem('token');
-    if (!t) return;
-    if (tokenExpired(t)) {
+  private static loadValidToken(): string | null {
+    const saved = localStorage.getItem('token');
+    if (!saved) return null;
+    if (tokenExpired(saved)) {
       localStorage.removeItem('token');
-      this.token.set(null);
-    } else {
-      this.token.set(t);
+      return null;
     }
+    return saved;
   }
 
   async login(username: string, password: string, returnUrl = '/dashboard'): Promise<void> {
     this.loading.set(true);
     try {
+      // Backend returns plain JWT text string
       const raw = await firstValueFrom(
-        this.http.post(`${this.baseUrl}/api/v1/auth/login`, { username, password }, {
-          responseType: 'text',
-        }),
+        this.http.post(
+          `${this.baseUrl}/api/v1/auth/login`,
+          { username, password },
+          { responseType: 'text' },
+        ),
       );
 
       const jwt = typeof raw === 'string' ? raw.trim() : '';
       if (!jwt) {
-        this.toast.show('Login failed: missing token.', 'error');
+        this.toast.show('Login failed: empty response.', 'error');
         throw new Error('missing_token');
       }
 
@@ -97,14 +101,16 @@ export class AuthService {
       this.token.set(jwt);
       this.toast.show('Login successful.');
       await this.router.navigateByUrl(returnUrl || '/dashboard');
+
     } catch (err: unknown) {
-      if (err instanceof HttpErrorResponse && err.status === 401) {
-        this.toast.show('Invalid username or password', 'error');
+      if (err instanceof Error && err.message === 'missing_token') throw err;
+      if (err instanceof HttpErrorResponse) {
+        const msg = err.status === 401
+          ? 'Invalid username or password'
+          : (quantityExtractMessage(err.error ?? err) || 'Login failed.');
+        this.toast.show(msg, 'error');
       } else {
-        const msg = quantityExtractMessage(
-          err instanceof HttpErrorResponse ? err.error ?? err : (err as any)?.error ?? err,
-        );
-        this.toast.show(msg || 'Login failed.', 'error');
+        this.toast.show('Login failed. Please try again.', 'error');
       }
       throw err;
     } finally {
@@ -120,20 +126,22 @@ export class AuthService {
   }): Promise<void> {
     this.loading.set(true);
     try {
+      // Backend returns { token, username } on successful signup
       const res = await firstValueFrom(
         this.http.post<any>(`${this.baseUrl}/api/v1/auth/signup`, input),
       );
 
-      // If backend returns a token on signup, accept it automatically.
       if (res?.token) {
-        localStorage.setItem('token', res.token);
-        this.token.set(res.token);
-        this.toast.show('Account created. Logged in.');
+        const jwt = String(res.token).trim();
+        localStorage.setItem('token', jwt);
+        this.token.set(jwt);
+        this.toast.show('Account created. Welcome!');
         await this.router.navigateByUrl('/dashboard');
         return;
       }
 
-      this.toast.show('Signup successful. Please login.');
+      this.toast.show('Signup successful. Please log in.');
+
     } catch (err: any) {
       const msg = quantityExtractMessage(err?.error ?? err);
       this.toast.show(msg || 'Signup failed.', 'error');
@@ -150,10 +158,6 @@ export class AuthService {
     void this.router.navigateByUrl('/login');
   }
 
-  /**
-   * Used by the JWT interceptor to keep signal-based auth state consistent.
-   * No toast to avoid noisy UI during background 401 refreshes.
-   */
   clearSession(): void {
     localStorage.removeItem('token');
     this.token.set(null);

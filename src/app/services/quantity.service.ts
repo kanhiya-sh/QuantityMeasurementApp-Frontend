@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ArithmeticOp, MeasurementType } from '../models/measurement.types';
+import { environment } from '../../environments/environment';
 
 type QuantityType = MeasurementType;
 
@@ -33,7 +34,8 @@ export interface HistoryItem {
 @Injectable({ providedIn: 'root' })
 export class QuantityService {
   private readonly http    = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080';
+  // Reads from environment.ts (local) or environment.prod.ts (production)
+  private readonly baseUrl = environment.apiUrl;
 
   compare(
     type: QuantityType,
@@ -60,8 +62,6 @@ export class QuantityService {
     );
   }
 
-  // FIX: Renamed from add() to arithmetic() and passes the operation
-  // so the backend knows whether to Add, Subtract, or Divide.
   arithmetic(
     type: QuantityType,
     value1: number, unit1: string,
@@ -89,7 +89,7 @@ export function quantityExtractMessage(res: unknown): string {
   if (res == null) return 'No response from server.';
 
   if (typeof res === 'object' && (res as any)['isTrusted'] === true) {
-    return 'Network request failed. Is the API server running on port 8080?';
+    return 'Network request failed. Is the API server running?';
   }
 
   if (typeof res === 'string') {
@@ -103,7 +103,9 @@ export function quantityExtractMessage(res: unknown): string {
   if (typeof r['value'] === 'number' && typeof r['unit'] === 'string') return `${r['value']} ${r['unit']}`;
   if (typeof r['message'] === 'string' && r['message'].trim()) return r['message'] as string;
   if (typeof r['error'] === 'string' && r['error'].trim()) return r['error'] as string;
-  if (typeof r['statusText'] === 'string' && r['statusText'].trim() && r['statusText'] !== 'Unknown Error') return r['statusText'] as string;
+  if (typeof r['statusText'] === 'string' && r['statusText'].trim() && r['statusText'] !== 'Unknown Error') {
+    return r['statusText'] as string;
+  }
 
   return JSON.stringify(r['data'] ?? res);
 }

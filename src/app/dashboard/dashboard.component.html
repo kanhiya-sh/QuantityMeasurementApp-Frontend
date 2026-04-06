@@ -1,0 +1,113 @@
+<div class="dash">
+  <div class="floating-bg" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <nav class="topbar glass topbar--sticky" aria-label="Primary">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">QX</div>
+      <div class="brand-text">
+        <div class="title">QuantifyX</div>
+        <div class="subtitle">{{ welcome() }}</div>
+        @if (!auth.isLoggedIn()) {
+          <span class="guest-chip">Guest Mode</span>
+        }
+      </div>
+    </div>
+
+    <div class="actions">
+      <button
+        type="button"
+        class="icon-btn"
+        (click)="toggleTheme()"
+        aria-label="Toggle theme"
+        title="Toggle theme"
+      >
+        @if (!isLight()) {
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        } @else {
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M21 13.2A8.2 8.2 0 0 1 10.8 3 7.1 7.1 0 1 0 21 13.2Z"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              stroke-linejoin="round"
+            />
+          </svg>
+        }
+      </button>
+
+      <button type="button" class="btn history" (click)="goHistory()">
+        <svg class="history-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 8v5l3 2M3 12a9 9 0 1 0 2.64-6.36M3 4v4h4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>History</span>
+      </button>
+
+      @if (!auth.isLoggedIn()) {
+        <button
+          type="button"
+          class="btn login-hint"
+          (click)="goLoginForHistory()"
+        >
+          Login for history tracking
+        </button>
+      }
+
+      @if (auth.isLoggedIn()) {
+        <button type="button" class="btn danger" (click)="auth.logout()">Logout</button>
+      }
+    </div>
+  </nav>
+
+  <div class="dash-main">
+  <section class="grid" aria-label="Dashboard panels">
+    <app-selection-panel
+      [selectedType]="type()"
+      [selectedAction]="action()"
+      (typeChange)="type.set($event)"
+      (actionChange)="action.set($event)"
+    />
+
+    <app-calculator-panel
+      [action]="action()"
+      [units]="unitsForType()"
+      [value1]="value1()"
+      [value2]="value2()"
+      [unit1]="unit1()"
+      [unit2]="unit2()"
+      [operation]="operation()"
+      [loading]="calcLoading()"
+      (value1Change)="setValue1($event)"
+      (value2Change)="setValue2($event)"
+      (unit1Change)="unit1.set($event)"
+      (unit2Change)="unit2.set($event)"
+      (operationChange)="operation.set($event)"
+      (calculate)="onCalculate()"
+    />
+
+    <app-result-panel [result]="resultText()" />
+  </section>
+  </div>
+</div>

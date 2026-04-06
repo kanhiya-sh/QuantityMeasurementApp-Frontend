@@ -1,0 +1,38 @@
+<section class="panel glass">
+  <header>
+    <h2>Selection</h2>
+    <p>Pick a measurement domain and what you want to do.</p>
+  </header>
+
+  <div class="group">
+    <h3>Type</h3>
+    <div class="row">
+      @for (t of types; track t) {
+        <button
+          type="button"
+          class="chip"
+          [class.active]="selectedType() === t"
+          (click)="typeChange.emit(t)"
+        >
+          {{ t }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="group">
+    <h3>Action</h3>
+    <div class="row">
+      @for (a of actions; track a) {
+        <button
+          type="button"
+          class="chip"
+          [class.active]="selectedAction() === a"
+          (click)="actionChange.emit(a)"
+        >
+          {{ a }}
+        </button>
+      }
+    </div>
+  </div>
+</section>

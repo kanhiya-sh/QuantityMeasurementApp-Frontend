@@ -13,15 +13,17 @@ import { AuthService } from '../services/auth.service';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   private readonly router = inject(Router);
-  private readonly auth = inject(AuthService);
+  private readonly auth   = inject(AuthService);
 
   intercept(
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    const token = localStorage.getItem('token');
 
-    // Skip auth endpoints so login/signup can run without a token.
+    // Use signal-based token — stays in sync with auth state
+    const token = this.auth.token();
+
+    // Skip adding Authorization header for auth endpoints (login/signup)
     const isAuthEndpoint = req.url.includes('/api/v1/auth/');
 
     const authReq = !isAuthEndpoint && token
@@ -35,6 +37,7 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(authReq).pipe(
       catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 401) {
+          // Token expired or invalid — clear session and redirect to login
           this.auth.clearSession();
           void this.router.navigate(['/login']);
         }
@@ -43,4 +46,3 @@ export class JwtInterceptor implements HttpInterceptor {
     );
   }
 }
-
